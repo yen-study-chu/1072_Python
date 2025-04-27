@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./img/chuicon.png" sizes="32x32" type="image/png" />
+    <title>中華大學圖資處教學研究組範例爬蟲網頁</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Required Stylesheets -->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"
+    />
+
+    <!-- Load polyfills to support older browsers -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
+
+    <!-- Required scripts -->
+    <script src="https://unpkg.com/vue@latest/dist/vue.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <style>
+      * {
+        font-family: "Noto Sans TC", sans-serif;
+        list-style: none;
+      }
+
+      /* .container{
+            margin-top: 10px;
+        } */
+    </style>
+  </head>
+
+  <body>
+    <!-- Our application root element -->
+    <div id="app">
+      <!-- Title -->
+      <b-navbar toggleable="lg" type="light" variant="light">
+        <b-navbar-brand href="/">
+          <img
+            src="img/175538168.jpg"
+            width="30"
+            height="30"
+            class="d-inline-block align-top"
+            alt="Kitten"
+          />
+          中華大學圖資處教學研究組範例爬蟲網頁
+        </b-navbar-brand>
+        <b-nav-item-dropdown text="OPEN API" right>
+          <b-dropdown-item href="#">新聞</b-dropdown-item>
+          <b-dropdown-item href="#">== 增加中 ==</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar>
+      <!-- Context -->
+      <b-container>
+        <h1 class="text-center">台灣最新新聞</h1>
+        <p class="text-center">
+          OPEN API Source :
+          <a
+            href="https://newsapi.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            newsapi</a
+          >
+        </p>
+        <b-table striped hover :fields="fields" :items="items">
+          <template #cell(title)="row">
+            <b-link :href="row.item.url">{{ row.item.title }} </b-link>
+          </template>
+        </b-table>
+      </b-container>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- Start running your app -->
+    <script>
+      window.app = new Vue({
+        el: "#app",
+        data: {
+          name: "",
+          fields: [
+            {
+              key: "publicTime",
+              label: "發布時間",
+              sortable: true,
+              sortDirection: "desc",
+              thStyle: { width: "30%" },
+            },
+            {
+              key: "title",
+              label: "新聞標題",
+              sortable: true,
+              sortDirection: "desc",
+              thStyle: { width: "70%" },
+            },
+            {
+              key: "author",
+              label: "新聞來源",
+              sortable: true,
+              sortDirection: "desc",
+              thStyle: { width: "5%" },
+            },
+          ],
+          items: [],
+        },
+        beforeMount() {
+          this.getPostsPopular();
+        },
+        computed: {
+          showAlert() {
+            return this.name.length > 4 ? true : false;
+          },
+        },
+        methods: {
+          getPostsPopular() {
+            axios({
+              method: "get",
+              url: `https://api.allorigins.win/get?url=${encodeURIComponent(
+                "http://newsapi.org/v2/top-headlines?country=tw&apiKey=103b791ef1a34d2ab87f77799406ad85"
+              )}`,
+            })
+              .then((res) => {
+                const data = JSON.parse(res.data.contents);
+                data.articles.forEach((e) => {
+                  let d = {};
+                  d["publicTime"] = e["publishedAt"];
+                  d["title"] = e["title"];
+                  d["author"] = e["author"];
+                  d["url"] = e["url"];
+                  this.items.push(d);
+                });
+                const detail = data.articles;
+                console.log(data);
+              })
+              .catch((error) => {
+                // handle error
+                console.log(error);
+              });
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+print("w=50,x=10,y=5,z=1")
+w=int(input('w:'))
+x=int(input('x:'))
+y=int(input('y:'))
+z=int(input('z:'))
+print(w*50+x*10+y*5+z*1)
